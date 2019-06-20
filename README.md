@@ -15,3 +15,7 @@ to check what i2c bus...
 ```
 i2cdetect -y 1
 ```
+
+# Todo
+- display message from arg
+- get message from sensors
