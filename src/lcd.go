@@ -1,9 +1,13 @@
 package main
 
-import "github.com/davecheney/i2c"
-import "log"
-import "fmt"
-import "time"
+import (
+        "github.com/davecheney/i2c"
+        "flag"
+        "log"
+        "fmt"
+        "time"
+        s "strings"
+)
 
 func check(err error) {
         if err != nil { log.Fatal(err) }
@@ -16,13 +20,25 @@ func main() {
         check(err)
         lcd.BacklightOn()
         lcd.Clear()
+
+        // get text from argument -text
+        var text string
+        flag.StringVar(&text, "text", "Welcome to workshop", "insert text to display to lcd")
+        flag.Parse()
+        count, txt := len(text), s.Split(text, "")
+
         for {
-                lcd.Home()
-                t := time.Now()
-                lcd.SetPosition(1, 0)
-                fmt.Fprint(lcd, "0123456789abcdrf")
-                lcd.SetPosition(2, 0)
-                fmt.Fprint(lcd, t.Format("15:04:05 2006"))
-                time.Sleep(333 * time.Millisecond)
+                for i := 0; i <= count; i++ {
+                        lcd.Home()
+                        t := time.Now()
+                        new_text := s.Join(txt[i:], "") + s.Repeat(" ", i)
+                        lcd.SetPosition(1, 0)
+                        fmt.Fprint(lcd, new_text)
+
+                        lcd.SetPosition(2, 0)
+                        fmt.Fprint(lcd, t.Format("15:04:05 2006"))
+
+                        time.Sleep(333 * time.Millisecond)
+                }
         }
-}       
+}
